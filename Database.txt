@@ -1,0 +1,40 @@
+- Users
+-- id
+-- email
+-- password
+-- name
+-- birthdate
+-- city
+-- work
+-- avatar
+-- cover
+-- token
+
+- UserRelations
+-- id
+-- user_from
+-- user_to
+
+- Posts
+-- id
+-- type (text, photo) (PostsTypes)
+-- created_at
+-- body
+
+PostsTypes
+-- id
+-- tipo
+
+- PostComments
+-- id
+-- id_post
+-- id_user
+-- created_at
+-- body
+
+
+- PostLikes
+-- id
+-- id_post
+-- id_user
+-- created_at
