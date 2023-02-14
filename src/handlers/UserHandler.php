@@ -46,7 +46,7 @@ class UserHandler
         return false;
     }
 
-    public function emailExists(string $email)
+    public static function emailExists(string $email)
     {
         $user = User::select()->where('email', $email)->one();
         return $user ? true : false;
@@ -66,6 +66,7 @@ class UserHandler
             $user = new User();
             $user->id = $data['id'];
             $user->name = $data['name'];
+            $user->email = $data['email'];
             $user->birthdate = $data['birthdate'];
             $user->city = $data['city'];
             $user->work = $data['work'];
@@ -158,5 +159,37 @@ class UserHandler
             ->where('user_from', $from)
             ->where('user_to', $to)
         ->execute();
+    }
+
+    public static function searchUser(string $term): array
+    {
+        $users = [];
+        $data = User::select()->where('name', 'like', "%$term%")->get();
+
+        if ($data) {
+            foreach ($data as $user) {
+                $newUser = new User();
+                $newUser->id = $user['id'];
+                $newUser->name = $user['name'];
+                $newUser->avatar = $user['avatar'];
+
+                $users[] = $newUser;
+            }
+        }
+        return $users;
+    }
+
+    public static function updateProfile($fields, $idUser)
+    {
+        if (count($fields) > 0) {
+            $update = User::update();
+            foreach ($fields as $key => $value) {
+                if ($key === 'password') {
+                    $value = password_hash($value, PASSWORD_ARGON2ID);
+                }
+                $update->set($key, $value);
+            }
+            $update->where('id', $idUser)->execute();
+        }
     }
 }

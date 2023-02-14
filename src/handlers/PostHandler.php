@@ -5,6 +5,7 @@ namespace src\handlers;
 use src\models\Post;
 use src\models\User;
 use src\models\UserRelation;
+use src\models\PostLike;
 
 class PostHandler
 {
@@ -36,8 +37,10 @@ class PostHandler
             $newPost->user->name = $newUser['name'];
             $newPost->user->avatar = $newUser['avatar'];
 
-            $newPost->likeCount = 0;
-            $newPost->liked = false;
+            $likes = PostLike::select()->where('id_post', $postItem['id'])->get();
+
+            $newPost->likeCount = count($likes);
+            $newPost->liked = self::isLiked($postItem['id'], $loggedUserId);
 
             $newPost->comments = [];
 
@@ -45,6 +48,36 @@ class PostHandler
         }
 
         return $posts;
+    }
+
+    public static function isLiked($postId, $loggedUserId)
+    {
+        $myLike = PostLike::select()
+            ->where('id_post', $postId)
+            ->where('id_user', $loggedUserId)
+            ->get();
+
+        if (count($myLike) > 0 ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function deleteLike(int $idPost, int $loggedUserId)
+    {
+        PostLike::delete()
+            ->where('id_post', $idPost)
+            ->where('id_user', $loggedUserId)
+        ->execute();
+    }
+
+    public static function addLike(int $idPost, int $loggedUserId)
+    {
+        PostLike::insert([
+            'id_post' => $idPost,
+            'id_user' => $loggedUserId,
+        ])->execute();
     }
 
     public static function getUserFeed(int $idUser, int $loggedUserId, int $page)
@@ -55,23 +88,21 @@ class PostHandler
             ->where('id_user', $idUser)
             ->orderBy('created_at', 'desc')
             ->page($page, $perPage)
-        ->get();
+            ->get();
 
         $total = Post::select()
             ->where('id_user', $idUser)
-        ->count();
+            ->count();
 
         $pageCount = ceil($total / $perPage);
 
         $posts = self::_postListToObject($postList, $loggedUserId);
 
         return [
-            'posts'=> $posts,
-            'pageCount'=> $pageCount,
+            'posts' => $posts,
+            'pageCount' => $pageCount,
             'currentPage' => $page,
         ];
-
-
     }
 
     public static function getHomeFeed($idUser, $page): array
@@ -91,11 +122,11 @@ class PostHandler
             ->where('id_user', 'in', $users)
             ->orderBy('created_at', 'desc')
             ->page($page, $perPage)
-        ->get();
+            ->get();
 
         $total = Post::select()
             ->where('id_user', 'in', $users)
-        ->count();
+            ->count();
 
         $pageCount = ceil($total / $perPage);
 
@@ -104,8 +135,8 @@ class PostHandler
 
         //* 5. retornar o resultado
         return [
-            'posts'=> $posts,
-            'pageCount'=> $pageCount,
+            'posts' => $posts,
+            'pageCount' => $pageCount,
             'currentPage' => $page,
         ];
     }
@@ -115,7 +146,7 @@ class PostHandler
         $photosData = Post::select()
             ->where('id_user', $idUser)
             ->where('type', 'photo')
-        ->get();
+            ->get();
 
         $photos = [];
 

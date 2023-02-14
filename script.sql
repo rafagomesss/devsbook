@@ -75,6 +75,10 @@ VALUES
 (1, 6541);
 
 SELECT * FROM users;
+select * from posts;
+SELECT * FROM postlikes;
+
+
 
 # UPDATE users SET work = 'System Analyst', city = 'Maringá - PR, Brazil' WHERE id = 1 LIMIT 1;
 # UPDATE users SET work = 'Administradora', city = 'Maringá - PR, Brazil' WHERE id = 2 LIMIT 1;
