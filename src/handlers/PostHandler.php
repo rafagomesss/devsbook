@@ -6,6 +6,7 @@ use src\models\Post;
 use src\models\User;
 use src\models\UserRelation;
 use src\models\PostLike;
+use src\models\PostComment;
 
 class PostHandler
 {
@@ -42,7 +43,13 @@ class PostHandler
             $newPost->likeCount = count($likes);
             $newPost->liked = self::isLiked($postItem['id'], $loggedUserId);
 
-            $newPost->comments = [];
+            $newPost->comments = PostComment::select()
+                ->where('id_post', $postItem['id'])
+            ->get();
+
+            foreach ($newPost->comments as $key => $comment) {
+                $newPost->comments[$key]['user'] = User::select()->where('id', $comment['id_user'])->one();
+            }
 
             $posts[] = $newPost;
         }
@@ -161,5 +168,38 @@ class PostHandler
         }
 
         return $photos;
+    }
+
+    public static function addComment(int $idComment, $body, $idUser)
+    {
+        PostComment::insert([
+            'id_post' => $idComment,
+            'body' => $body,
+            'id_user' => $idUser,
+        ])->execute();
+    }
+
+    public static function delete($idPost, $loggedUserId)
+    {
+        $post = Post::select()
+            ->where('id', $idPost)
+            ->where('id_user', $loggedUserId)
+        ->get();
+
+        if (count($post) > 0) {
+            $post = $post[0];
+
+            PostLike::delete()->where('id_post', $idPost)->execute();
+            PostComment::delete()->where('id_post', $idPost)->execute();
+
+            if($post['type'] === 'photo') {
+                $img = __DIR__ . '/../../media/uploads/' . $post['body'];
+                if (file_exists($img)) {
+                    unlink($img);
+                }
+            }
+
+            Post::delete()->where('id', $idPost)->execute();
+        }
     }
 }

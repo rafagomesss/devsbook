@@ -33,4 +33,18 @@ class PostController extends Controller
 
         $this->redirect("/$url");
     }
+
+    public function delete($atts = [])
+    {
+        if (!empty($atts['id'])) {
+            $idPost = $atts['id'];
+
+            PostHandler::delete(
+                $idPost,
+                $this->loggedUser->id
+            );
+        }
+
+        $this->redirect('/');
+    }
 }

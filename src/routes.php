@@ -1,4 +1,5 @@
 <?php
+
 use core\Router;
 
 $router = new Router();
@@ -12,6 +13,7 @@ $router->get('/cadastro', 'LoginController@signup');
 $router->post('/cadastro', 'LoginController@signupAction');
 
 $router->post('/post/new', 'PostController@new');
+$router->get('/post/{id}/delete', 'PostController@delete');
 
 
 $router->get('/perfil/{id}/fotos', 'ProfileController@photos');
@@ -29,13 +31,8 @@ $router->post('/config', 'ConfigController@update');
 $router->get('/config', 'ConfigController@index');
 
 $router->get('/ajax/like/{id}', 'AjaxController@like');
+$router->post('/ajax/comment', 'AjaxController@comment');
+
+$router->post('/ajax/upload', 'AjaxController@upload');
 
 $router->get('/sair', 'LoginController@logout');
-
-
-
-// $router->get('/pesquisa');
-// $router->get('/sair);
-// $router->get('/amigos);
-// $router->get('/fotos);
-// $router->get('/config);

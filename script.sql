@@ -78,6 +78,9 @@ SELECT * FROM users;
 select * from posts;
 SELECT * FROM postlikes;
 
+SELECT * FROM postcomments;
+#INSERT INTO postcomments (id_post, id_user, body) VALUES (23, 1, 'Este é um comentário inserido na mão via banco de dados');
+#INSERT INTO postcomments (id_post, id_user, body) VALUES (23, 1, 'Este é um comentário secundário de teste');
 
 
 # UPDATE users SET work = 'System Analyst', city = 'Maringá - PR, Brazil' WHERE id = 1 LIMIT 1;
