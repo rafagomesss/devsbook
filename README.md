@@ -5,7 +5,4 @@
 </p>
 
 > :construction: Projeto final curso PHP 7.4 B7Web :construction:
-
-# :hammer: Funcionalidades do projeto :construction:
-
-- `Funcionalidade 1`: em desenvolvimento :construction:
+    
